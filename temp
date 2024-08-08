@@ -1,0 +1,29 @@
+depends_on:
+      dbpostgres:
+        condition: service_healthy
+    networks:
+      - api_node_postgres
+    healthcheck:
+      test: curl --fail http://localhost:3000 || exit 1
+      interval: 15s
+      retries: 5
+      start_period: 15s
+      timeout: 10s      
+
+  frontend:
+    container_name: frontend_react
+    build:
+      context: ../aplicacao_fullstack
+      dockerfile: ./dockerfiles/React.Dockerfile
+    ports: 
+      - "3097:5173"
+    networks:
+        - api_node_postgres  
+    volumes: 
+      - ./frontend/:/src/app
+      - ./frontend/node_modules
+    links:
+      - backend
+    depends_on:
+      backend:
+        condition: service_healthy        
