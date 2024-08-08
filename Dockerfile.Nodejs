@@ -1,0 +1,19 @@
+FROM node:latest
+
+#Etapa 1: copia o package.json e instala as dependencias em diretorio especifico
+WORKDIR /src/
+COPY app/package*.json ./
+RUN npm install && npm cache clean --force
+#Instala o nodemon de forma global - necessario para que ele rode, do contrario teremos um erro
+RUN npm install -g nodemon
+#Adiciona o diretorio contendo a pasta node_modules para o PATH. 
+# Com isso as dependencias poderao ser vistas a partir da pasta da aplicacao
+ENV PATH /src/node_modules/.bin:$PATH
+
+#Etapa 2: altera o diretorio para o da aplicacao e copia os arquivos do projeto para o mesmo
+WORKDIR /src/app
+COPY app/ .
+
+EXPOSE 3000
+
+CMD [ "npm", "run", "start:dev" ]
